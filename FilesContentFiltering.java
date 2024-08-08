@@ -3,9 +3,16 @@ import java.util.regex.Matcher;
 import java.io.*;
 import java.util.Scanner;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 class FilesContentFiltering {
+
+    // Global var for statistics
     private static HashMap<String, Integer> stats = new HashMap<>();
+
+    private static LinkedList<Long> allNumbersInt = new LinkedList<>();
+
+    private static LinkedList<Double> allNumbersFloat = new LinkedList<>();
 
     public static void main(String[] args) throws IOException {
         boolean isShowStats = false;
@@ -38,15 +45,22 @@ class FilesContentFiltering {
                 i++;
             }
             else if(matcherIsTxt.find()) {
-                System.out.println(args[i]);
+                // System.out.println(args[i]);
                 contentFilter(args[i], appendFlag, path, prefix);
                 appendFlag = true;
           }
        }
        if(isShowStats == true) {
-           showStats(false);
+           showStats(true);
        }
     }
+
+    /**
+     * Show statistics for filtering data
+     *
+     * @param isFull show full statistics?
+     * @return print statistics in console
+     */
     public static void showStats(boolean isFull) {
         if (isFull == false) {
             for (HashMap.Entry<String, Integer> entry: stats.entrySet()) {
@@ -54,6 +68,13 @@ class FilesContentFiltering {
                 String value = Integer.toString(entry.getValue());
                 System.out.println(key + " " + value + " lines saved");
             }
+        }
+        else {
+            long sum = 0;
+            for (int i = 0; i < allNumbersInt.size(); i++){
+                sum += allNumbersInt.get(i);
+            }
+            System.out.println("Integers sum is " + Long.toString(sum));
         }
     }
 
@@ -68,23 +89,30 @@ class FilesContentFiltering {
             while (s.hasNext()) {
                 if (s.hasNextLong()) {
                     try(PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(path + prefix + "integers.txt", appendFlagInt)))) {
-                        pw.println(s.next());
+                        String line = s.next();
+
+                        pw.println(line);
+
+                        long li = Long.parseLong(line);
+
                         appendFlagInt = true;
-                        stats.merge("integers", 1, Integer::sum);
+                        stats.merge("integers.txt", 1, Integer::sum);
+                        allNumbersInt.add(li);
+                        
                     }
                 }
                 else if (s.hasNextDouble()) {
                     try(PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(path + prefix + "floats.txt", appendFlagFloat)))) {
                         pw.println(s.next());
                         appendFlagFloat = true;
-                        stats.merge("floats", 1, Integer::sum);
+                        stats.merge("floats.txt", 1, Integer::sum);
                     }
                 }
                 else {
                     try(PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(path + prefix + "strings.txt", appendFlagString)))) {
                         pw.println(s.next());
                         appendFlagString = true;
-                        stats.merge("strings", 1, Integer::sum);
+                        stats.merge("strings.txt", 1, Integer::sum);
                     }
                 }
             }
