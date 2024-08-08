@@ -5,6 +5,7 @@ import java.util.Scanner;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Collections;
+import java.nio.file.*;
 
 class FilesContentFiltering {
 
@@ -55,6 +56,11 @@ class FilesContentFiltering {
                 if (i+1 >= args.length)
                     return;
                 path = args[i+1] + "/";
+                Path checkPath = Paths.get(path);
+                if (!Files.exists(checkPath)) {
+                    System.out.println(ANSI_RED + "ОШИБКА " + ANSI_RESET + "директория не найдена!");
+                    return;
+                }
                 i++;
             }
             else if (args[i].equals("-p")) {
