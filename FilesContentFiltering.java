@@ -4,7 +4,6 @@ import java.io.*;
 import java.util.Scanner;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.lang.Math;
 import java.util.Collections;
 
 class FilesContentFiltering {
@@ -43,7 +42,6 @@ class FilesContentFiltering {
         for(int i = 0; i < args.length; i++) {
             Matcher matcherIsTxt = patternIsTxt.matcher(args[i]);
             if(args[i].equals("-s")) {
-                // System.out.println("SHORT STATS ACTIVE");
                 isShowStats = true;
             }
             else if (args[i].equals("-f")) {
@@ -51,18 +49,15 @@ class FilesContentFiltering {
                 isFullStats = true;
             }
             else if (args[i].equals("-a")) {
-                // System.out.println("APPEND ACTIVE");
                 appendFlag = true;
             }
             else if (args[i].equals("-o")) {
-                // System.out.println("SELECT OUTPUT PATH ACTIVE");
                 if (i+1 >= args.length)
                     return;
                 path = args[i+1] + "/";
                 i++;
             }
             else if (args[i].equals("-p")) {
-                // System.out.println("PREFIX ACTIVE");
                 if (i+1 >= args.length)
                     return;
                 Matcher matcherIsDir = patternIsDir.matcher(args[i + 1]);
@@ -79,6 +74,7 @@ class FilesContentFiltering {
                 }
                 catch (Exception e) {
                     System.out.println(ANSI_YELLOW + "ВНИМАНИЕ" + ANSI_RESET + " файл " + args[i] + " отсутсвует");
+                    System.out.println(e);
                 }
             }
             else {
@@ -155,12 +151,10 @@ class FilesContentFiltering {
     }
 
     public static void contentFilter(String filename, boolean appendFlag, String path, String prefix) throws IOException {
-        Scanner s = null;
         boolean appendFlagInt = appendFlag;
         boolean appendFlagFloat = appendFlag;
         boolean appendFlagString = appendFlag;
-        try {
-            s = new Scanner(new BufferedReader(new FileReader(filename)));
+        try(Scanner s = new Scanner(new BufferedReader(new FileReader(filename)))) {
             s.useDelimiter("(\\n)");
             while (s.hasNext()) {
                 if (s.hasNextLong()) {
@@ -202,9 +196,6 @@ class FilesContentFiltering {
                     }
                 }
             }
-        } finally {
-            if (s != null) 
-                s.close();
-        }
+        }     
     }
 }
