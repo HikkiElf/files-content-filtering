@@ -2,7 +2,6 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.io.*;
 import java.util.Scanner;
-import java.util.Math;
 
 class FilesContentFiltering {
     public static void main(String[] args) throws IOException {
