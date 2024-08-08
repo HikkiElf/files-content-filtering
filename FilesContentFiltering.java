@@ -30,6 +30,8 @@ class FilesContentFiltering {
 
     private static LinkedList<Double> allNumbersFloat = new LinkedList<>();
 
+    private static LinkedList<String> allWords = new LinkedList<>();
+
     public static void main(String[] args) throws IOException {
         boolean isShowStats = false;
         boolean isFullStats = false;
@@ -43,22 +45,22 @@ class FilesContentFiltering {
                 // System.out.println("SHORT STATS ACTIVE");
                 isShowStats = true;
             }
-            if (args[i].equals("-f")) {
+            else if (args[i].equals("-f")) {
                 isShowStats = true;
                 isFullStats = true;
             }
-            if (args[i].equals("-a")) {
+            else if (args[i].equals("-a")) {
                 // System.out.println("APPEND ACTIVE");
                 appendFlag = true;
             }
-            if (args[i].equals("-o")) {
+            else if (args[i].equals("-o")) {
                 // System.out.println("SELECT OUTPUT PATH ACTIVE");
                 if (i+1 >= args.length)
                     return;
                 path = args[i+1] + "/";
                 i++;
             }
-            if (args[i].equals("-p")) {
+            else if (args[i].equals("-p")) {
                 // System.out.println("PREFIX ACTIVE");
                 if (i+1 >= args.length)
                     return;
@@ -71,8 +73,11 @@ class FilesContentFiltering {
                     appendFlag = true;
                 }
                 catch (Exception e) {
-                    System.out.println(ANSI_RED + "ОШИБКА" + ANSI_RESET + " файл " + args[i] + " отсутсвует");
+                    System.out.println(ANSI_YELLOW + "ВНИМАНИЕ" + ANSI_RESET + " файл " + args[i] + " отсутсвует");
                 }
+            }
+            else {
+                System.out.println(ANSI_YELLOW + "ВНИМАНИЕ " + ANSI_RESET + args[i] + " не распознано как файл или команда");
             }
        }
        if(isShowStats == true) {
@@ -88,29 +93,54 @@ class FilesContentFiltering {
      */
     public static void showStats(boolean isFull) {
         if (isFull == true) {
-            long sumInt = 0;
-            double avgInt = 0;
-            for (int i = 0; i < allNumbersInt.size(); i++) {
-                sumInt += allNumbersInt.get(i);
+            if(allNumbersInt.size() != 0) {
+                long sumInt = 0;
+                double avgInt = 0;
+                for (int i = 0; i < allNumbersInt.size(); i++) {
+                    sumInt += allNumbersInt.get(i);
+                }
+                Collections.sort(allNumbersInt);
+                avgInt = sumInt/allNumbersInt.size();
+                System.out.println("Минимальное целое число " + allNumbersInt.get(0));
+                System.out.println("Максимальное целое число " + allNumbersInt.get(allNumbersInt.size()-1));
+                System.out.println("Сумма целых чисел " + Long.toString(sumInt));
+                System.out.println("Среднее целых чисел " + avgInt);
             }
-            Collections.sort(allNumbersInt);
-            avgInt = sumInt/allNumbersInt.size();
-            System.out.println("Минимальное целое число " + allNumbersInt.get(0));
-            System.out.println("Максимальное целое число " + allNumbersInt.get(allNumbersInt.size()-1));
-            System.out.println("Сумма целых чисел " + Long.toString(sumInt));
-            System.out.println("Среднее целых чисел " + avgInt);
+            if(allNumbersFloat.size() != 0) {
+                double sumFloat = 0;
+                double avgFloat = 0;
+                for (int i = 0; i < allNumbersFloat.size(); i++) {
+                    sumFloat += allNumbersFloat.get(i);
+                }
+                Collections.sort(allNumbersFloat);
+                avgFloat = sumFloat/allNumbersFloat.size();
+                System.out.println("Минимальное вещественное число " + allNumbersFloat.get(0));
+                System.out.println("Максимально вещественное число " + allNumbersFloat.get(allNumbersFloat.size()-1));
+                System.out.println("Сумма вещественных чисел " + Double.toString(sumFloat));
+                System.out.println("Среднее вещественных чисел " + avgFloat);
+            }
+            if(allWords.size() != 0) {
+                int min = Integer.MAX_VALUE;
+                int max = Integer.MIN_VALUE;
 
-            double sumFloat = 0;
-            double avgFloat = 0;
-            for (int i = 0; i < allNumbersFloat.size(); i++) {
-                sumFloat += allNumbersFloat.get(i);
+                String minWord = "";
+                String maxWord = "";
+            
+                Collections.sort(allWords);
+                for(int i = 0; i<allWords.size(); i++) {
+                    if(allWords.get(i).length() < min) {
+                        minWord = allWords.get(i);
+                        min = allWords.get(i).length();
+                    }
+                    if (allWords.get(i).length() > max) {
+                        maxWord = allWords.get(i);
+                        max = allWords.get(i).length();
+                    }
+                }
+                System.out.println("Самое короткое слово: " + minWord);
+                System.out.println("Самое длинное слово: " + maxWord);
             }
-            Collections.sort(allNumbersFloat);
-            avgFloat = sumFloat/allNumbersFloat.size();
-            System.out.println("Минимальное вещественное число " + allNumbersFloat.get(0));
-            System.out.println("Максимально вещественное число " + allNumbersFloat.get(allNumbersFloat.size()-1));
-            System.out.println("Сумма вещественных чисел " + Double.toString(sumFloat));
-            System.out.println("Среднее вещественных чисел " + avgFloat);
+            
         }
         for (HashMap.Entry<String, Integer> entry: stats.entrySet()) {
                 String key = entry.getKey();
@@ -137,7 +167,7 @@ class FilesContentFiltering {
                         long li = Long.parseLong(line);
 
                         appendFlagInt = true;
-                        stats.merge(INTEGERS_PATH, 1, Integer::sum);
+                        stats.merge(prefix + INTEGERS_PATH, 1, Integer::sum);
                         allNumbersInt.add(li);
                         
                     }
@@ -151,15 +181,21 @@ class FilesContentFiltering {
                         double d = Double.parseDouble(line);
 
                         appendFlagFloat = true;
-                        stats.merge(FLOATS_PATH, 1, Integer::sum);
+                        stats.merge(prefix + FLOATS_PATH, 1, Integer::sum);
                         allNumbersFloat.add(d);
                     }
                 }
                 else {
                     try(PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(path + prefix + STRINGS_PATH, appendFlagString)))) {
-                        pw.println(s.next());
+                        String line = s.next();
+
+                        pw.println(line);
+
                         appendFlagString = true;
-                        stats.merge(STRINGS_PATH, 1, Integer::sum);
+                        stats.merge(prefix + STRINGS_PATH, 1, Integer::sum);
+                        for(String word : line.split(" ")) {
+                            allWords.add(word);
+                        }
                     }
                 }
             }
