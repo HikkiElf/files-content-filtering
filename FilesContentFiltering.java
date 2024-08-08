@@ -30,7 +30,7 @@ class FilesContentFiltering {
 
     private static LinkedList<Double> allNumbersFloat = new LinkedList<>();
 
-    private static LinkedList<String> allWords = new LinkedList<>();
+    private static LinkedList<String> allStrings = new LinkedList<>();
 
     public static void main(String[] args) throws IOException {
         boolean isShowStats = false;
@@ -39,6 +39,7 @@ class FilesContentFiltering {
         String path = "";
         String prefix = "";
         Pattern patternIsTxt = Pattern.compile("^.*\\.(txt)$");
+        Pattern patternIsDir = Pattern.compile("(/)");
         for(int i = 0; i < args.length; i++) {
             Matcher matcherIsTxt = patternIsTxt.matcher(args[i]);
             if(args[i].equals("-s")) {
@@ -64,7 +65,11 @@ class FilesContentFiltering {
                 // System.out.println("PREFIX ACTIVE");
                 if (i+1 >= args.length)
                     return;
-                prefix = args[i+1];
+                Matcher matcherIsDir = patternIsDir.matcher(args[i + 1]);
+                if(matcherIsDir.find()) {
+                    System.out.println(ANSI_YELLOW + "ВНИМАНИЕ " + ANSI_RESET + "Недопустимый знак '/' заменён на '-'");
+                }
+                prefix = args[i + 1].replaceAll("(/)", "-");
                 i++;
             }
             else if(matcherIsTxt.find()) {
@@ -119,26 +124,26 @@ class FilesContentFiltering {
                 System.out.println("Сумма вещественных чисел " + Double.toString(sumFloat));
                 System.out.println("Среднее вещественных чисел " + avgFloat);
             }
-            if(allWords.size() != 0) {
+            if(allStrings.size() != 0) {
                 int min = Integer.MAX_VALUE;
                 int max = Integer.MIN_VALUE;
 
-                String minWord = "";
-                String maxWord = "";
+                String minString = "";
+                String maxString = "";
             
-                Collections.sort(allWords);
-                for(int i = 0; i<allWords.size(); i++) {
-                    if(allWords.get(i).length() < min) {
-                        minWord = allWords.get(i);
-                        min = allWords.get(i).length();
+                Collections.sort(allStrings);
+                for(int i = 0; i<allStrings.size(); i++) {
+                    if(allStrings.get(i).length() < min) {
+                        minString = allStrings.get(i);
+                        min = allStrings.get(i).length();
                     }
-                    if (allWords.get(i).length() > max) {
-                        maxWord = allWords.get(i);
-                        max = allWords.get(i).length();
+                    if (allStrings.get(i).length() > max) {
+                        maxString = allStrings.get(i);
+                        max = allStrings.get(i).length();
                     }
                 }
-                System.out.println("Самое короткое слово: " + minWord);
-                System.out.println("Самое длинное слово: " + maxWord);
+                System.out.println("Самая короткая строка: " + minString);
+                System.out.println("Самая длинная строка: " + maxString);
             }
             
         }
@@ -193,9 +198,7 @@ class FilesContentFiltering {
 
                         appendFlagString = true;
                         stats.merge(prefix + STRINGS_PATH, 1, Integer::sum);
-                        for(String word : line.split(" ")) {
-                            allWords.add(word);
-                        }
+                        allStrings.add(line);
                     }
                 }
             }
