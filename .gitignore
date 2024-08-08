@@ -1,3 +1,4 @@
 testDir/
-.class
-.txt
+*.class
+*.txt
+*.swp
