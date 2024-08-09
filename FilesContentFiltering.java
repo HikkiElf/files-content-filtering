@@ -33,17 +33,15 @@ class FilesContentFiltering {
         }
     }
 
+    // Files names for filtered data
     private static final String INTEGERS_PATH = "integers.txt";
     private static final String FLOATS_PATH = "floats.txt";
     private static final String STRINGS_PATH = "strings.txt";
 
-    // Global var for statistics
+    // Global vars for statistics
     private static HashMap<String, Integer> stats = new HashMap<>();
-
     private static LinkedList<Long> allNumbersInt = new LinkedList<>();
-
     private static LinkedList<Double> allNumbersFloat = new LinkedList<>();
-
     private static LinkedList<String> allStrings = new LinkedList<>();
 
     public static void main(String[] args) throws IOException {
@@ -166,7 +164,15 @@ class FilesContentFiltering {
         for (HashMap.Entry<String, Integer> entry: stats.entrySet()) {
                 String key = entry.getKey();
                 String value = Integer.toString(entry.getValue());
-                System.out.println(key + " " + value + " lines saved");
+                String wordEnd = "";
+                String wordEndSave = "о";
+                if (Integer.parseInt(value) % 10 == 1){
+                    wordEnd = "а";
+                    wordEndSave = wordEnd;
+                }
+                else if (Integer.parseInt(value) % 10 < 5)
+                    wordEnd = "и";
+                System.out.println(key + " " + value + " строк" + wordEnd + " сохранен" + wordEndSave);
         }
     }
 
