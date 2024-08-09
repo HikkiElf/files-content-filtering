@@ -1,23 +1,37 @@
+import java.io.*;
+import java.nio.file.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-import java.io.*;
 import java.util.Scanner;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Collections;
-import java.nio.file.*;
 
 class FilesContentFiltering {
+    public enum Color {
 
-    public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_BLACK = "\u001B[30m";
-    public static final String ANSI_RED = "\u001B[31m";
-    public static final String ANSI_GREEN = "\u001B[32m";
-    public static final String ANSI_YELLOW = "\u001B[33m";
-    public static final String ANSI_BLUE = "\u001B[34m";
-    public static final String ANSI_PURPLE = "\u001B[35m";
-    public static final String ANSI_CYAN = "\u001B[36m";
-    public static final String ANSI_WHITE = "\u001B[37m";
+        ANSI_RESET ("\u001B[0m"),
+        ANSI_RED ("\u001B[31m"),    
+        ANSI_GREEN ("\u001B[32m"),
+        ANSI_YELLOW ("\u001B[33m"),    
+        ANSI_BLUE ("\u001B[34m"),       
+        ANSI_PURPLE ("\u001B[35m"),    
+        ANSI_CYAN ("\u001B[36m"),      
+        ANSI_WHITE ("\u001B[37m");
+
+        public final String code;
+
+        Color(String code) {
+            this.code = code;
+        }
+
+        public static String colorize(Color color, Object message) {
+            return color.code + message + Color.ANSI_RESET.code;
+        }
+        public String colorize(Object message) {
+            return this.code + message + Color.ANSI_RESET.code;
+        }
+    }
 
     private static final String INTEGERS_PATH = "integers.txt";
     private static final String FLOATS_PATH = "floats.txt";
@@ -57,8 +71,8 @@ class FilesContentFiltering {
                     return;
                 path = args[i+1] + "/";
                 Path checkPath = Paths.get(path);
-                if (!Files.exists(checkPath)) {
-                    System.out.println(ANSI_RED + "ОШИБКА " + ANSI_RESET + "директория не найдена!");
+                if (!Files.isDirectory(checkPath)) {
+                    System.out.println(Color.colorize(Color.ANSI_RED, "ОШИБКА ") +  "директория не найдена!");
                     return;
                 }
                 i++;
@@ -68,7 +82,7 @@ class FilesContentFiltering {
                     return;
                 Matcher matcherIsDir = patternIsDir.matcher(args[i + 1]);
                 if(matcherIsDir.find()) {
-                    System.out.println(ANSI_YELLOW + "ВНИМАНИЕ " + ANSI_RESET + "Недопустимый знак '/' заменён на '-'");
+                    System.out.println(Color.colorize(Color.ANSI_YELLOW, "ВНИМАНИЕ ") + "Недопустимый знак '/' заменён на '-'");
                 }
                 prefix = args[i + 1].replaceAll("(/)", "-");
                 i++;
@@ -79,12 +93,12 @@ class FilesContentFiltering {
                     appendFlag = true;
                 }
                 catch (Exception e) {
-                    System.out.println(ANSI_YELLOW + "ВНИМАНИЕ" + ANSI_RESET + " файл " + args[i] + " отсутсвует");
+                    System.out.println(Color.colorize(Color.ANSI_YELLOW, "ВНИМАНИЕ ") + "файл " + args[i] + " отсутсвует");
                     System.out.println(e);
                 }
             }
             else {
-                System.out.println(ANSI_YELLOW + "ВНИМАНИЕ " + ANSI_RESET + args[i] + " не распознано как файл или команда");
+                System.out.println(Color.colorize(Color.ANSI_YELLOW, "ВНИМАНИЕ ") + args[i] + " не распознано как файл или команда");
             }
        }
        if(isShowStats == true) {
