@@ -57,7 +57,6 @@ class FilesContentFiltering {
         Pattern patternIsDir = Pattern.compile("(/)");
 
         for(int i = 0; i < args.length; i++) {
-            Matcher matcherIsTxt = patternIsTxt.matcher(args[i]);
             if(args[i].equals("-s")) {
                 isShowStats = true;
             }
@@ -89,18 +88,22 @@ class FilesContentFiltering {
                 prefix = args[i + 1].replaceAll("(/)", "-");
                 i++;
             }
-            else if(matcherIsTxt.find()) {
-                try {
-                    contentFilter(args[i], isAppend, path, prefix);
-                    isAppend = true;
-                }
-                catch (Exception e) {
-                    System.out.println(Color.colorize(Color.ANSI_YELLOW, "ВНИМАНИЕ ") + "файл " + args[i] + " отсутсвует");
-                    System.out.println(e);
-                }
-            }
             else {
-                System.out.println(Color.colorize(Color.ANSI_YELLOW, "ВНИМАНИЕ ") + args[i] + " не распознано как файл или команда");
+                Matcher matcherIsTxt = patternIsTxt.matcher(args[i]);
+                if(matcherIsTxt.find()) {
+                    try {
+                        contentFilter(args[i], isAppend, path, prefix);
+                        isAppend = true;
+                    }
+                    catch (Exception e) {
+                        System.out.println(Color.colorize(Color.ANSI_YELLOW, "ВНИМАНИЕ ") + "файл " + args[i] + " отсутсвует");
+                        System.out.println(e);
+                    }
+                }
+                else {
+                    System.out.println(Color.colorize(Color.ANSI_YELLOW, "ВНИМАНИЕ ") + args[i] + " не распознано как файл или команда");
+                }
+               
             }
        }
        if(isShowStats == true) {
