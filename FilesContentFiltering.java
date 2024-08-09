@@ -8,7 +8,8 @@ import java.util.LinkedList;
 import java.util.Collections;
 
 class FilesContentFiltering {
-    public enum Color {
+
+    private enum Color {
 
         ANSI_RESET ("\u001B[0m"),
         ANSI_RED ("\u001B[31m"),    
@@ -19,7 +20,7 @@ class FilesContentFiltering {
         ANSI_CYAN ("\u001B[36m"),      
         ANSI_WHITE ("\u001B[37m");
 
-        public final String code;
+        private final String code;
 
         Color(String code) {
             this.code = code;
@@ -28,7 +29,7 @@ class FilesContentFiltering {
         public static String colorize(Color color, Object message) {
             return color.code + message + Color.ANSI_RESET.code;
         }
-        public String colorize(Object message) {
+        private String colorize(Object message) {
             return this.code + message + Color.ANSI_RESET.code;
         }
     }
@@ -47,11 +48,14 @@ class FilesContentFiltering {
     public static void main(String[] args) throws IOException {
         boolean isShowStats = false;
         boolean isFullStats = false;
-        boolean appendFlag = false;
+        boolean isAppend = false;
+
         String path = "";
         String prefix = "";
+
         Pattern patternIsTxt = Pattern.compile("^.*\\.(txt)$");
         Pattern patternIsDir = Pattern.compile("(/)");
+
         for(int i = 0; i < args.length; i++) {
             Matcher matcherIsTxt = patternIsTxt.matcher(args[i]);
             if(args[i].equals("-s")) {
@@ -62,7 +66,7 @@ class FilesContentFiltering {
                 isFullStats = true;
             }
             else if (args[i].equals("-a")) {
-                appendFlag = true;
+                isAppend = true;
             }
             else if (args[i].equals("-o")) {
                 if (i+1 >= args.length)
@@ -87,8 +91,8 @@ class FilesContentFiltering {
             }
             else if(matcherIsTxt.find()) {
                 try {
-                    contentFilter(args[i], appendFlag, path, prefix);
-                    appendFlag = true;
+                    contentFilter(args[i], isAppend, path, prefix);
+                    isAppend = true;
                 }
                 catch (Exception e) {
                     System.out.println(Color.colorize(Color.ANSI_YELLOW, "ВНИМАНИЕ ") + "файл " + args[i] + " отсутсвует");
@@ -176,10 +180,10 @@ class FilesContentFiltering {
         }
     }
 
-    public static void contentFilter(String filename, boolean appendFlag, String path, String prefix) throws IOException {
-        boolean appendFlagInt = appendFlag;
-        boolean appendFlagFloat = appendFlag;
-        boolean appendFlagString = appendFlag;
+    public static void contentFilter(String filename, boolean isAppend, String path, String prefix) throws IOException {
+        boolean appendFlagInt = isAppend;
+        boolean appendFlagFloat = isAppend;
+        boolean appendFlagString = isAppend;
         try(Scanner s = new Scanner(new BufferedReader(new FileReader(filename)))) {
             s.useDelimiter("(\\n)");
             while (s.hasNext()) {
