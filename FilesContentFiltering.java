@@ -113,37 +113,75 @@ class FilesContentFiltering {
        }
     }
 
-    public static void intCalculations() {
+    private static void intStats() {
         if(allNumbersInt.size() != 0) {
-                long sumInt = 0;
-                double avgInt = 0;
-                for (int i = 0; i < allNumbersInt.size(); i++) {
-                    sumInt += allNumbersInt.get(i);
-                }
-                Collections.sort(allNumbersInt);
-                avgInt = sumInt/allNumbersInt.size();
-                System.out.println("Минимальное целое число " + allNumbersInt.get(0));
-                System.out.println("Максимальное целое число " + allNumbersInt.get(allNumbersInt.size()-1));
-                System.out.println("Сумма целых чисел " + Long.toString(sumInt));
-                System.out.println("Среднее целых чисел " + avgInt);
+            long sumInt = 0;
+            double avgInt = 0;
+            for (int i = 0; i < allNumbersInt.size(); i++) {
+                sumInt += allNumbersInt.get(i);
             }
+            Collections.sort(allNumbersInt);
+            avgInt = sumInt/allNumbersInt.size();
+            System.out.println("Минимальное целое число " + allNumbersInt.get(0));
+            System.out.println("Максимальное целое число " + allNumbersInt.get(allNumbersInt.size()-1));
+            System.out.println("Сумма целых чисел " + Long.toString(sumInt));
+            System.out.println("Среднее целых чисел " + avgInt);
         }
+    }
 
-    public static void floatCalculations() {
+    private static void floatStats() {
         if(allNumbersFloat.size() != 0) {
-                double sumFloat = 0;
-                double avgFloat = 0;
-                for (int i = 0; i < allNumbersFloat.size(); i++) {
-                    sumFloat += allNumbersFloat.get(i);
-                }
-                Collections.sort(allNumbersFloat);
-                avgFloat = sumFloat/allNumbersFloat.size();
-                System.out.println("Минимальное вещественное число " + allNumbersFloat.get(0));
-                System.out.println("Максимально вещественное число " + allNumbersFloat.get(allNumbersFloat.size()-1));
-                System.out.println("Сумма вещественных чисел " + Double.toString(sumFloat));
-                System.out.println("Среднее вещественных чисел " + avgFloat);
+            double sumFloat = 0;
+            double avgFloat = 0;
+            for (int i = 0; i < allNumbersFloat.size(); i++) {
+                sumFloat += allNumbersFloat.get(i);
+            }
+            Collections.sort(allNumbersFloat);
+            avgFloat = sumFloat/allNumbersFloat.size();
+            System.out.println("Минимальное вещественное число " + allNumbersFloat.get(0));
+            System.out.println("Максимально вещественное число " + allNumbersFloat.get(allNumbersFloat.size()-1));
+            System.out.println("Сумма вещественных чисел " + Double.toString(sumFloat));
+            System.out.println("Среднее вещественных чисел " + avgFloat);
+        }
+    }
+
+    private static void stringStats() {
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+
+        String minString = "";
+        String maxString = "";
+        
+        Collections.sort(allStrings);
+        for(int i = 0; i<allStrings.size(); i++) {
+            if(allStrings.get(i).length() < min) {
+                minString = allStrings.get(i);
+                min = allStrings.get(i).length();
+            }
+            if (allStrings.get(i).length() > max) {
+                maxString = allStrings.get(i);
+                max = allStrings.get(i).length();
             }
         }
+        System.out.println("Самая короткая строка: " + minString);
+        System.out.println("Самая длинная строка: " + maxString);
+
+    }
+    private static void baseStats() {
+        for (HashMap.Entry<String, Integer> entry: stats.entrySet()) {
+            String key = entry.getKey();
+            String value = Integer.toString(entry.getValue());
+            String wordEnd = "";
+            String wordEndSave = "о";
+            if (Integer.parseInt(value) % 10 == 1){
+                wordEnd = "а";
+                wordEndSave = wordEnd;
+            }
+            else if (Integer.parseInt(value) % 10 < 5)
+                wordEnd = "и";
+            System.out.println(key + " " + value + " строк" + wordEnd + " сохранен" + wordEndSave);
+        }
+    }
 
     /**
      * Show statistics for filtered data
@@ -151,49 +189,15 @@ class FilesContentFiltering {
      * @param isFull show full statistics?
      * @return print statistics in console
      */
-    public static void showStats(boolean isFull) {
+    private static void showStats(boolean isFull) {
         if (isFull == true) {
-            
-            intCalculations();
+            intStats();
 
-            floatCalculations();
-            
-            if(allStrings.size() != 0) {
-                int min = Integer.MAX_VALUE;
-                int max = Integer.MIN_VALUE;
+            floatStats();
 
-                String minString = "";
-                String maxString = "";
-            
-                Collections.sort(allStrings);
-                for(int i = 0; i<allStrings.size(); i++) {
-                    if(allStrings.get(i).length() < min) {
-                        minString = allStrings.get(i);
-                        min = allStrings.get(i).length();
-                    }
-                    if (allStrings.get(i).length() > max) {
-                        maxString = allStrings.get(i);
-                        max = allStrings.get(i).length();
-                    }
-                }
-                System.out.println("Самая короткая строка: " + minString);
-                System.out.println("Самая длинная строка: " + maxString);
-            }
+            stringStats();
         }
-             
-        for (HashMap.Entry<String, Integer> entry: stats.entrySet()) {
-                String key = entry.getKey();
-                String value = Integer.toString(entry.getValue());
-                String wordEnd = "";
-                String wordEndSave = "о";
-                if (Integer.parseInt(value) % 10 == 1){
-                    wordEnd = "а";
-                    wordEndSave = wordEnd;
-                }
-                else if (Integer.parseInt(value) % 10 < 5)
-                    wordEnd = "и";
-                System.out.println(key + " " + value + " строк" + wordEnd + " сохранен" + wordEndSave);
-        }
+        baseStats();
     }
 
     /**
