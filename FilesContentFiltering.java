@@ -12,13 +12,13 @@ class FilesContentFiltering {
     private enum Color {
 
         ANSI_RESET ("\u001B[0m"),
-        ANSI_RED ("\u001B[31m"),    
-        ANSI_GREEN ("\u001B[32m"),
-        ANSI_YELLOW ("\u001B[33m"),    
-        ANSI_BLUE ("\u001B[34m"),       
-        ANSI_PURPLE ("\u001B[35m"),    
-        ANSI_CYAN ("\u001B[36m"),      
-        ANSI_WHITE ("\u001B[37m");
+        red ("\u001B[31m"),    
+        green ("\u001B[32m"),
+        yellow ("\u001B[33m"),    
+        blue ("\u001B[34m"),       
+        purple ("\u001B[35m"),    
+        cyan ("\u001B[36m"),      
+        white ("\u001B[37m");
 
         private final String code;
 
@@ -46,6 +46,7 @@ class FilesContentFiltering {
     private static LinkedList<String> allStrings = new LinkedList<>();
 
     public static void main(String[] args) throws IOException {
+
         boolean isShowStats = false;
         boolean isFullStats = false;
         boolean isAppend = false;
@@ -68,22 +69,24 @@ class FilesContentFiltering {
                 isAppend = true;
             }
             else if (args[i].equals("-o")) {
-                if (i+1 >= args.length)
+                if (i+1 >= args.length) {
                     return;
+                }
                 path = args[i+1] + "/";
                 Path checkPath = Paths.get(path);
                 if (!Files.isDirectory(checkPath)) {
-                    System.out.println(Color.colorize(Color.ANSI_RED, "ОШИБКА ") +  "директория не найдена!");
+                    System.out.println(Color.colorize(Color.red, "ОШИБКА ") +  "директория не найдена!");
                     return;
                 }
                 i++;
             }
             else if (args[i].equals("-p")) {
-                if (i+1 >= args.length)
+                if (i+1 >= args.length) {
                     return;
+                }
                 Matcher matcherIsDir = patternIsDir.matcher(args[i + 1]);
                 if(matcherIsDir.find()) {
-                    System.out.println(Color.colorize(Color.ANSI_YELLOW, "ВНИМАНИЕ ") + "Недопустимый знак '/' заменён на '-'");
+                    System.out.println(Color.colorize(Color.yellow, "ВНИМАНИЕ ") + "Недопустимый знак в префиксе '/' заменён на '-'");
                 }
                 prefix = args[i + 1].replaceAll("(/)", "-");
                 i++;
@@ -96,14 +99,13 @@ class FilesContentFiltering {
                         isAppend = true;
                     }
                     catch (Exception e) {
-                        System.out.println(Color.colorize(Color.ANSI_YELLOW, "ВНИМАНИЕ ") + "файл " + args[i] + " отсутсвует");
+                        System.out.println(Color.colorize(Color.yellow, "ВНИМАНИЕ ") + "файл " + args[i] + " отсутсвует");
                         System.out.println(e);
                     }
                 }
                 else {
-                    System.out.println(Color.colorize(Color.ANSI_YELLOW, "ВНИМАНИЕ ") + args[i] + " не распознано как файл или команда");
+                    System.out.println(Color.colorize(Color.yellow, "ВНИМАНИЕ ") + args[i] + " не распознано как файл или команда");
                 }
-               
             }
        }
        if(isShowStats == true) {
@@ -111,15 +113,8 @@ class FilesContentFiltering {
        }
     }
 
-    /**
-     * Show statistics for filtering data
-     *
-     * @param isFull show full statistics?
-     * @return print statistics in console
-     */
-    public static void showStats(boolean isFull) {
-        if (isFull == true) {
-            if(allNumbersInt.size() != 0) {
+    public static void intCalculations() {
+        if(allNumbersInt.size() != 0) {
                 long sumInt = 0;
                 double avgInt = 0;
                 for (int i = 0; i < allNumbersInt.size(); i++) {
@@ -132,7 +127,10 @@ class FilesContentFiltering {
                 System.out.println("Сумма целых чисел " + Long.toString(sumInt));
                 System.out.println("Среднее целых чисел " + avgInt);
             }
-            if(allNumbersFloat.size() != 0) {
+        }
+
+    public static void floatCalculations() {
+        if(allNumbersFloat.size() != 0) {
                 double sumFloat = 0;
                 double avgFloat = 0;
                 for (int i = 0; i < allNumbersFloat.size(); i++) {
@@ -145,6 +143,21 @@ class FilesContentFiltering {
                 System.out.println("Сумма вещественных чисел " + Double.toString(sumFloat));
                 System.out.println("Среднее вещественных чисел " + avgFloat);
             }
+        }
+
+    /**
+     * Show statistics for filtered data
+     *
+     * @param isFull show full statistics?
+     * @return print statistics in console
+     */
+    public static void showStats(boolean isFull) {
+        if (isFull == true) {
+            
+            intCalculations();
+
+            floatCalculations();
+            
             if(allStrings.size() != 0) {
                 int min = Integer.MAX_VALUE;
                 int max = Integer.MIN_VALUE;
@@ -166,8 +179,8 @@ class FilesContentFiltering {
                 System.out.println("Самая короткая строка: " + minString);
                 System.out.println("Самая длинная строка: " + maxString);
             }
-            
         }
+             
         for (HashMap.Entry<String, Integer> entry: stats.entrySet()) {
                 String key = entry.getKey();
                 String value = Integer.toString(entry.getValue());
@@ -183,11 +196,24 @@ class FilesContentFiltering {
         }
     }
 
+    /**
+     * Filtering and write data to .txt files
+     *
+     * @param filename
+     * @param isAppend append data if true, rewrite if false
+     * @param path path for output files 
+     * @param prefix prefix for output filenames
+     * @return write filtered data in .txt file
+     */
     public static void contentFilter(String filename, boolean isAppend, String path, String prefix) throws IOException {
+
         boolean appendFlagInt = isAppend;
         boolean appendFlagFloat = isAppend;
         boolean appendFlagString = isAppend;
+
         try(Scanner s = new Scanner(new BufferedReader(new FileReader(filename)))) {
+
+            // new line delimeter
             s.useDelimiter("(\\n)");
             while (s.hasNext()) {
                 if (s.hasNextLong()) {
