@@ -3,8 +3,6 @@ import com.hikkielf.Color;
 
 public class Allert {
 
-    
-
     public static void warning(String message) {
         System.out.println(Color.colorize(Color.yellow, "ВНИМАНИЕ ") + message);
     }
