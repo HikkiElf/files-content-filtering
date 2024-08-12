@@ -10,3 +10,7 @@
 ### Работа с программой:
 `java -jar util.jar [-s|-f|-a|-o <dir>|-p <prefix>] 1.txt ... n.txt`
 
+результат: файлы strings.txt, integers.txt, floats.txt
+
+#### Аргументы:
+-s: показывает краткую статистику о сохранённых файлах
