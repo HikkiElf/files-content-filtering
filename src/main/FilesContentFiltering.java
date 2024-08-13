@@ -122,25 +122,27 @@ class FilesContentFiltering {
     }
 
     private static void stringStats() {
-        int min = Integer.MAX_VALUE;
-        int max = Integer.MIN_VALUE;
+        if (allStrings.size() != 0) {
+            int min = Integer.MAX_VALUE;
+            int max = Integer.MIN_VALUE;
 
-        String minString = "";
-        String maxString = "";
-        
-        Collections.sort(allStrings);
-        for(int i = 0; i<allStrings.size(); i++) {
-            if(allStrings.get(i).length() < min) {
-                minString = allStrings.get(i);
-                min = allStrings.get(i).length();
+            String minString = "";
+            String maxString = "";
+            
+            Collections.sort(allStrings);
+            for(int i = 0; i<allStrings.size(); i++) {
+                if(allStrings.get(i).length() < min) {
+                    minString = allStrings.get(i);
+                    min = allStrings.get(i).length();
+                }
+                if (allStrings.get(i).length() > max) {
+                    maxString = allStrings.get(i);
+                    max = allStrings.get(i).length();
+                }
             }
-            if (allStrings.get(i).length() > max) {
-                maxString = allStrings.get(i);
-                max = allStrings.get(i).length();
-            }
+            System.out.println("Самая короткая строка: " + minString);
+            System.out.println("Самая длинная строка: " + maxString);
         }
-        System.out.println("Самая короткая строка: " + minString);
-        System.out.println("Самая длинная строка: " + maxString);
     }
 
     private static void baseStats() {

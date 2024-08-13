@@ -20,7 +20,4 @@ public enum Color {
     public static String colorize(Color color, Object message) {
         return color.code + message + Color.ANSI_RESET.code;
     }
-    private String colorize(Object message) {
-        return this.code + message + Color.ANSI_RESET.code;
-    }
 }
